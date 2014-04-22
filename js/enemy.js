@@ -7,13 +7,19 @@ function Enemy(y, x, maxY, maxX) {
   this.rand = (Math.round(Math.random()*7) + 1) - 1;
   this.direction = this.directions[this.rand]; 
   this.speed = 1;
+  this.frame = 0;
+  this.varience = 30;
 }
 
 Enemy.prototype.update = function (map) {
   if (!map) {
     return false;
   }
-
+  this.frame++;
+  if (this.frame == this.varience) {
+    this.sway();
+    this.frame = 0;
+  } 
   var nextPos = this.getNextPos();
 
   var collision = this.detectCollision(nextPos, map);
@@ -21,7 +27,7 @@ Enemy.prototype.update = function (map) {
     this.bounce();
     nextPos = this.getNextPos();
     collision = this.detectCollision(nextPos, map);
-    console.log(this.direction, nextPos, collision);
+    //console.log(this.direction, nextPos, collision);
   }
 
   // hit a player or player wall
@@ -51,9 +57,18 @@ Enemy.prototype.detectCollision = function (nextPos, map) {
 
 Enemy.prototype.bounce = function () {
   var rand = (Math.round(Math.random()*6) + 1) - 1;
-
-  console.log(this.direction, this.directions[rand], rand, this.directions);
+  //console.log(this.direction, this.directions[rand], rand, this.directions);
   this.direction = this.directions[rand];
+}
+
+Enemy.prototype.sway = function () {
+  var currentDirection = this.directions.indexOf(this.direction);
+  var nextDirection = currentDirection + 1;
+  if (nextDirection >= this.directions.length) {
+    nextDirection = 0;
+  }
+  this.direction = this.directions[nextDirection];
+  console.log(this.directions[currentDirection], this.directions[nextDirection], this.direction);
 }
 
 Enemy.prototype.getNextPos = function () {

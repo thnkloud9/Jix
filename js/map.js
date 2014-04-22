@@ -13,7 +13,7 @@ var Map = {
       var enemy = this.enemies[e];
       this.map[enemy.y][enemy.x] = 0;
       var nextPos = enemy.update(this.map);
-      console.log(nextPos);
+      //console.log(nextPos);
       this.map[nextPos[0]][nextPos[1]] = "A";
     } 
   },
