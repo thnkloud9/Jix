@@ -2,9 +2,11 @@
 
 var canvas = document.getElementById("stage");
 var ctx = canvas.getContext("2d");
-var fps = 25;  // how many 'update' frames per second
+var fps = 24;  // how many 'update' frames per second
 var step = 1/fps;  // how long is each frame (in seconds)
-var scale = 5;
+var scale = 4;
+var cols = 128;
+var rows = 128;
 
 var KEY = {
   LEFT:  37,

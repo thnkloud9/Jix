@@ -1,7 +1,7 @@
 var Map = {
 
-  cols: 64,
-  rows: 64,
+  cols: cols,
+  rows: rows,
   map: [],
   playerChars: [ "a", "b", "c", "d" ],
   enemyChars: [ "A", "B", "C", "D" ],

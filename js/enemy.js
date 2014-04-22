@@ -8,7 +8,7 @@ function Enemy(y, x, maxY, maxX) {
   this.direction = this.directions[this.rand]; 
   this.speed = 1;
   this.frame = 0;
-  this.varience = 30;
+  this.varience = 60;
 }
 
 Enemy.prototype.update = function (map) {
