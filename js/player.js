@@ -158,7 +158,6 @@ Player.prototype.turn = function () {
 }
 
 Player.prototype.bouncingBack = function (direction, nextDirection) {
-  console.log('checking', direction, nextDirection);
   if (direction == 'n' && nextDirection == 's') {
     return true;
   }
