@@ -9,6 +9,7 @@ function Player(y,x, maxY, maxX) {
   this.connected = true;
   this.okToDraw = false;
   this.direction = null;
+  this.lastDirection = null;
   this.clockwise = null;
   this.setInitialDirection();
   this.score = 0;
@@ -93,6 +94,7 @@ Player.prototype.update = function(map) {
         nextPos = this.getNextPos();
         onTrack = this.onTrack(nextPos, map);
       }
+      this.lastDirection = this.direction;
       this.drawing = false;
       this.connected = true;
       this.okToDraw = false;
@@ -144,8 +146,32 @@ Player.prototype.turn = function () {
       nextDirection = (this.directions.length - 1);
     }
   }
-  //console.log('turning ', nextDirection, this.directions[nextDirection]);
-  this.direction = this.directions[nextDirection];
+
+  // check if we are bouncing back
+  if (this.bouncingBack(this.lastDirection, this.directions[nextDirection])) {
+    this.clockwise = !this.clockwise;
+    this.turn();
+  } else {
+    this.direction = this.directions[nextDirection];
+  }
+
+}
+
+Player.prototype.bouncingBack = function (direction, nextDirection) {
+  console.log('checking', direction, nextDirection);
+  if (direction == 'n' && nextDirection == 's') {
+    return true;
+  }
+  if (direction == 's' && nextDirection == 'n') {
+    return true;
+  }
+  if (direction == 'e' && nextDirection == 'w') {
+    return true;
+  }
+  if (direction == 'w' && nextDirection == 'e') {
+    return true;
+  }
+  return false;
 }
 
 Player.prototype.onTrack = function (nextPos, map) {
