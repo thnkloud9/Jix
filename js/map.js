@@ -5,6 +5,7 @@ var Map = {
   map: [],
   playerChars: [ "a", "b", "c", "d" ],
   enemyChars: [ "A", "B", "C", "D" ],
+  fillColor: 5,
   enemies: [],
   players: [],
 
@@ -39,7 +40,12 @@ var Map = {
         }
       }
 
-      //console.log(nextPos);
+      // reset if next position has been filled by block fill
+      if (this.map[nextPos[0]][nextPos[1]] == this.fillColor) {
+        player.y = lastY;
+        player.x = lastX;
+        nextPos = player.update(this.map); 
+      }
       this.map[nextPos[0]][nextPos[1]] = "a";
     } 
   },
@@ -118,7 +124,7 @@ var Map = {
         if (y >= startY && y <= endY) {
           // fill
           if (x >= startX && x <= endX) {
-            this.map[y][x] = 5;
+            this.map[y][x] = this.fillColor;
           } 
         }
       }

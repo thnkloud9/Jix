@@ -186,7 +186,11 @@ Player.prototype.onTrack = function (nextPos, map) {
     return false;
   }
 
-  return true;
+  if (map[nextPos[0]][nextPos[1]] == 1) { 
+    return true;
+  }
+
+  return false;
 }
 
 Player.prototype.getNextPos = function () {
