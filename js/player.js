@@ -1,12 +1,175 @@
-function Player(y,x) {
+function Player(y,x, maxY, maxX) {
   this.x = x;
   this.y = y;
+  this.maxY = maxY;
+  this.maxX = maxX;
   this.directions = [ 'n', 'e', 's', 'w' ];
-  this.rand = (Math.round(Math.random()*3) + 1) - 1;
-  this.direction = this.directions[this.rand];
   this.speed = 1;
+  this.drawing = false;
+  this.direction = null;
+  this.clockwise = null;
+  this.setInitialDirection();
+}
+
+Player.prototype.move = function (direction) {
+
+  if (direction == 'up') {
+    if (this.direction == 's') {
+      this.clockwise = !this.clockwise;
+    }
+    this.direction = 'n';
+  }
+  if (direction == 'down') {
+    if (this.direction == 'n') {
+      this.clockwise = !this.clockwise;
+    }
+    this.direction = 's';
+  }
+  if (direction == 'left') {
+    if (this.direction == 'e') {
+      this.clockwise = !this.clockwise;
+    }
+    this.direction = 'w';
+  }
+  if (direction == 'right') {
+    if (this.direction == 'w') {
+      this.clockwise = !this.clockwise;
+    }
+    this.direction = 'e';
+  }
+}
+
+Player.prototype.setInitialDirection = function () {
+  if ((this.x == 0) || (this.x == this.maxX)) {
+    var directionOptions = [ 'n', 's' ];
+    this.direction = directionOptions[Math.round(Math.random())];
+
+    if (this.x == 0) {
+      this.clockwise = (this.direction == 's') ? false : true;
+    }
+
+    if (this.x == this.maxX) {
+      this.clockwise = (this.direction == 'n') ? false : true;
+    }
+  }
+
+  if ((this.y == 0) || (this.y == this.maxY)) {
+    var directionOptions = [ 'e', 'w' ];
+    this.direction = directionOptions[Math.round(Math.random())];
+
+    if (this.y == 0) {
+      this.clockwise = (this.direction == 'e') ? true : false;
+    }
+
+    if (this.y == this.maxY) {
+      this.clockwise = (this.direction == 'w') ? true : false;
+    }
+  }
+
 }
 
 Player.prototype.update = function(map) {
-  console.log(this);
+  var nextPos = this.getNextPos();
+  var onTrack = this.onTrack(nextPos, map);
+
+  //console.log('before ', nextPos, onTrack, this.drawing);
+  
+  // look for new track in direction we are traveling
+
+  if (!onTrack) {
+    if (this.isDrawing(nextPos, map)) {
+      this.drawing = true;
+    } else {
+      this.drawing = false;
+      while (!onTrack) {
+        this.turn();
+        nextPos = this.getNextPos();
+        onTrack = this.onTrack(nextPos, map);
+      }
+    }
+  }
+
+  //console.log('after ', nextPos, onTrack, this.drawing);
+
+  this.y = nextPos[0];
+  this.x = nextPos[1];
+  
+  return nextPos;
+}
+
+Player.prototype.isDrawing = function(nextPos, map) {
+  if ((nextPos[0] > this.maxY) || (nextPos[1] > this.maxX)) {
+    return false;
+  }
+
+  if ((nextPos[0] < 0) || (nextPos[1] < 0)) {
+    return false;
+  }
+
+  if (map[nextPos[0]]) {
+    if (map[nextPos[0]][nextPos[1]] == 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
+Player.prototype.turn = function () {
+  var currentDirection = this.directions.indexOf(this.direction);
+  if (this.clockwise) {
+    var nextDirection = currentDirection + 1;
+    if (nextDirection >  (this.directions.length - 1)) {
+      nextDirection = 0;
+    }
+  } else {  
+    var nextDirection = currentDirection - 1;
+    if (nextDirection < 0) {
+      nextDirection = (this.directions.length - 1);
+    }
+  }
+  //console.log('turning ', nextDirection, this.directions[nextDirection]);
+  this.direction = this.directions[nextDirection];
+}
+
+Player.prototype.onTrack = function (nextPos, map) {
+  if ((nextPos[0] > this.maxY) || (nextPos[1] > this.maxX)) {
+    return false;
+  }
+
+  if ((nextPos[0] < 0) || (nextPos[1] < 0)) {
+    return false;
+  }
+
+  if (map[nextPos[0]][nextPos[1]] == 1) { 
+    return true;
+  }
+
+  if (map[nextPos[0]][nextPos[1]] == 0) { 
+    return false;
+  }
+}
+
+Player.prototype.getNextPos = function () {
+  var nextX = null;
+  var nextY = null;
+  var nextMove = this.speed;
+
+  if (this.direction == 'n') {
+    nextY = this.y - nextMove;
+    nextX = this.x;
+  }
+  if (this.direction == 'e') {
+    nextY = this.y;
+    nextX = this.x + nextMove;
+  }
+  if (this.direction == 's') {
+    nextY = this.y + nextMove;
+    nextX = this.x;
+  }
+  if (this.direction == 'w') {
+    nextY = this.y;
+    nextX = this.x - nextMove;
+  }
+
+  return [nextY, nextX];
 }

@@ -8,7 +8,8 @@ function Enemy(y, x, maxY, maxX) {
   this.direction = this.directions[this.rand]; 
   this.speed = 1;
   this.frame = 0;
-  this.varience = 60;
+  this.variences = [ 55, 66, 77, 88 ];
+  this.varience = this.variences[(Math.round(Math.random()*4) + 1) - 1];
 }
 
 Enemy.prototype.update = function (map) {
@@ -18,6 +19,7 @@ Enemy.prototype.update = function (map) {
   this.frame++;
   if (this.frame == this.varience) {
     this.sway();
+    //console.log('sway', this.direction);
     this.frame = 0;
   } 
   var nextPos = this.getNextPos();
@@ -47,6 +49,9 @@ Enemy.prototype.detectCollision = function (nextPos, map) {
   if ((nextPos[0] >= this.maxY) || (nextPos[1] >= this.maxX)) {
     return true;
   }
+  if ((nextPos[0] <= 0) || (nextPos[1] <= 0)) {
+    return true;
+  }
   // hit a wall
   if (map[nextPos[0]][nextPos[1]] == 1) {
     return true;
@@ -68,51 +73,52 @@ Enemy.prototype.sway = function () {
     nextDirection = 0;
   }
   this.direction = this.directions[nextDirection];
-  console.log(this.directions[currentDirection], this.directions[nextDirection], this.direction);
+  //console.log(this.directions[currentDirection], this.directions[nextDirection], this.direction);
 }
 
 Enemy.prototype.getNextPos = function () {
   var nextX = null;
   var nextY = null;
+  var nextMove = this.speed;
 
   if (this.direction == 'n') {
-    nextY = this.y + 1;
+    nextY = this.y + nextMove;
     nextX = this.x;
   }
   if (this.direction == 'ne') {
-    nextY = this.y + 1;
-    nextX = this.x + 1;
+    nextY = this.y + nextMove;
+    nextX = this.x + nextMove;
   }
   if (this.direction == 'e') {
     nextY = this.y;
-    nextX = this.x + 1;
+    nextX = this.x + nextMove;
   }
   if (this.direction == 'se') {
-    nextY = this.y - 1;
-    nextX = this.x + 1;
+    nextY = this.y - nextMove;
+    nextX = this.x + nextMove;
   }
   if (this.direction == 's') {
-    nextY = this.y - 1;
+    nextY = this.y - nextMove;
     nextX = this.x;
   }
   if (this.direction == 'sw') {
-    nextY = this.y - 1;
-    nextX = this.x - 1;
+    nextY = this.y - nextMove;
+    nextX = this.x - nextMove;
   }
   if (this.direction == 'w') {
     nextY = this.y;
-    nextX = this.x - 1;
+    nextX = this.x - nextMove;
   }
   if (this.direction == 'nw') {
-    nextY = this.y + 1;
-    nextX = this.x - 1;
+    nextY = this.y + nextMove;
+    nextX = this.x - nextMove;
   }
 
   return [nextY, nextX];
 }
 
 Enemy.prototype.increaseSpeed = function(map) {
-  console.log(this.speed);
+  consol.log(this.speed);
 }
 
 

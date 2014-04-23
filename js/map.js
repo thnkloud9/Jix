@@ -9,13 +9,68 @@ var Map = {
   players: [],
 
   update: function () {
+    // update enemies
     for (e = 0; e < this.enemies.length; e++) {
       var enemy = this.enemies[e];
       this.map[enemy.y][enemy.x] = 0;
       var nextPos = enemy.update(this.map);
       //console.log(nextPos);
       this.map[nextPos[0]][nextPos[1]] = "A";
+    }
+
+    // update players 
+    this.updatePlayers();
+  },
+
+  updatePlayers: function () {
+    for (p = 0; p < this.players.length; p++) {
+      var player = this.players[p];
+      var lastY = player.y;
+      var lastX = player.x;
+      var playerWasDrawing = player.drawing;
+      var nextPos = player.update(this.map);
+
+      this.cleanPlayerTracks(lastY, lastX, playerWasDrawing, player.drawing);
+
+      if (playerWasDrawing) {
+        if (!player.drawing) {
+          console.log('player scored');
+          this.updatePlayerScore();
+        }
+      }
+
+      //console.log(nextPos);
+      this.map[nextPos[0]][nextPos[1]] = "a";
     } 
+  },
+
+  updatePlayerScore: function () {
+    for (var y = 0 ; y < this.rows ; y++) {
+      for (var x = 0 ; x < this.cols ; x++) {
+
+        // make walls permanent
+        if (this.map[y][x] == "a") {
+          this.map[y][x] = 1;
+        }
+
+        // fill inner area and calc score
+      }
+    }
+  },
+
+  cleanPlayerTracks: function (lastY, lastX, playerWasDrawing, playerIsDrawing) {
+      if (playerIsDrawing) {
+        if (this.map[lastY][lastX] == 1) {
+          this.map[lastY][lastX] = 1;
+        } else {
+          this.map[lastY][lastX] = "a";
+        }
+      } else {
+        this.map[lastY][lastX] = 1;
+      }
+      if (!playerWasDrawing) {
+        this.map[lastY][lastX] = 1;
+      }
   },
 
   colourLookup: function (x,y) {
@@ -54,11 +109,13 @@ var Map = {
     var rand = (Math.round(Math.random()*3) + 1) - 1;
     var playerStart = possibleStarts[rand];
     // add new player
-    var player = new Player(playerStart[0], playerStart[1]);
+    var player = new Player(playerStart[0], playerStart[1], (this.rows - 1), (this.cols - 1));
     this.players.push(player);
     // plot on map
     this.map[player.y][player.x] = "a";
     //console.log(player.update());
+    
+    return player;
   },
 
   reset: function () {

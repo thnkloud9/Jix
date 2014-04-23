@@ -1,8 +1,16 @@
 window.onload = function() {
 
+  var player = null;
+  var moving = false;
+
   // Game update function
   function update(dt) {
     //console.log('update', dt);
+
+    if (moving) {
+      player.move(moving);
+      moving = player.drawing;
+    } 
     Map.update();
   }
 
@@ -22,16 +30,16 @@ window.onload = function() {
     Game.run({
       canvas: canvas, render: render, update: update, step: step,
       keys: [
-        { keys: [KEY.LEFT,  KEY.A], mode: 'down', action: function() { swipeRight = false; swipeLeft   = true;  } },
-        { keys: [KEY.RIGHT, KEY.D], mode: 'down', action: function() { swipeLeft = false; swipeRight  = true;  } },
-        { keys: [KEY.UP,    KEY.W], mode: 'down', action: function() { swipeDown = false; swipeUp = true; } },
-        { keys: [KEY.DOWN,  KEY.S], mode: 'down', action: function() { swipeUp = false; swipeDown = true; } }
+        { keys: [KEY.LEFT,  KEY.A], mode: 'down', action: function() { moving = 'left';  } },
+        { keys: [KEY.RIGHT, KEY.D], mode: 'down', action: function() { moving = 'right';  } },
+        { keys: [KEY.UP,    KEY.W], mode: 'down', action: function() { moving = 'up'; } },
+        { keys: [KEY.DOWN,  KEY.S], mode: 'down', action: function() { moving = 'down'; } }
       ],
       swipes: [
-        { direction: 'up', action: function() { swipeUp = true; swipeDown = false; } },
-        { direction: 'down', action: function() { swipeDown = true; swipeUp = false; } },
-        { direction: 'left', action: function() { swipeLeft = true; swipeRight = false; } },
-        { direction: 'right', action: function() { swipeRight = true; swipeLeft = false; } }
+        { direction: 'up', action: function() { moving = 'up'; } },
+        { direction: 'down', action: function() { moving = 'down'; } },
+        { direction: 'left', action: function() { moving = 'left'; } },
+        { direction: 'right', action: function() { moving = 'right'; } }
       ]
     });
   }
@@ -39,7 +47,9 @@ window.onload = function() {
   function init() {
     Map.reset();
     Map.addEnemy();
-    Map.addPlayer();
+    Map.addEnemy();
+    Map.addEnemy();
+    player = Map.addPlayer();
     //console.log(Map.map);
   }
 
