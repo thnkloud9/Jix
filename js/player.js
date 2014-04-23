@@ -11,6 +11,7 @@ function Player(y,x, maxY, maxX) {
   this.direction = null;
   this.clockwise = null;
   this.setInitialDirection();
+  this.score = 0;
 }
 
 Player.prototype.move = function (direction) {

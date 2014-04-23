@@ -2,7 +2,7 @@ window.onload = function() {
 
   var player = null;
   var moving = false;
-  var level = 1;
+  var level = 0;
   var score = 0;
 
   // Game update function
@@ -46,9 +46,9 @@ window.onload = function() {
 
   function init() {
     Map.reset();
-    Map.addEnemy();
-    Map.addEnemy();
-    Map.addEnemy();
+    for (var l = 0; l < level; l++) {
+      Map.addEnemy();
+    }
     player = Map.addPlayer();
   }
 

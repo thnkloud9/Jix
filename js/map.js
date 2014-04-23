@@ -35,7 +35,7 @@ var Map = {
       if (playerWasDrawing) {
         if (!player.drawing) {
           console.log('player scored');
-          this.updatePlayerScore();
+          this.updatePlayerScore(player);
         }
       }
 
@@ -44,16 +44,83 @@ var Map = {
     } 
   },
 
-  updatePlayerScore: function () {
+  updatePlayerScore: function (player) {
+    var yCount = 0;
+    var xCount = 0;
+    var lastY = null;
+    var lastX = null;
+    var startY = null;
+    var endY = null;
+    var startX = null;
+    var endX = null;
+
     for (var y = 0 ; y < this.rows ; y++) {
       for (var x = 0 ; x < this.cols ; x++) {
 
         // make walls permanent
         if (this.map[y][x] == "a") {
+          if (!startY) {
+            startY = y;
+          }
+          if (!startX) {
+            startX = x;
+          }
+          if (y != lastY) {
+            yCount++;
+            lastY = y;
+          }
+          if (x != lastX) {
+            xCount++;
+            lastX = x;
+          }
           this.map[y][x] = 1;
         }
+      }
+    }
+    var endY = lastY;
+    var endX = lastX;
 
-        // fill inner area and calc score
+    // fill inner area and calc score
+    console.log('before adjust',startY, startX, endY, endX, player.y, player.x);
+
+    // this works for bottom blocks
+    if (player.y == (this.rows - 1)) {
+      startY++;
+      startX++;
+      endY++;
+      endX--;
+    }
+
+    if (player.x == 0) {
+      startY++;
+      startX--;
+      endY--;
+      endX--;
+    }
+
+    if (player.y == 0) {
+      startY--;
+      startX++;
+      endY--;
+      endX--;
+    }
+
+    if (player.x == (this.cols - 1)) {
+      startY++;
+      startX++;
+      endY--;
+      endX++;
+    }
+
+    console.log('after adjust', startY, startX, endY, endX, player.y, player.x);
+    for (var y = 0 ; y < this.rows ; y++) {
+      for (var x = 0 ; x < this.cols ; x++) {
+        if (y >= startY && y <= endY) {
+          // fill
+          if (x >= startX && x <= endX) {
+            this.map[y][x] = 5;
+          } 
+        }
       }
     }
   },
