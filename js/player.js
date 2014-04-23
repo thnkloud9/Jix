@@ -6,12 +6,16 @@ function Player(y,x, maxY, maxX) {
   this.directions = [ 'n', 'e', 's', 'w' ];
   this.speed = 1;
   this.drawing = false;
+  this.connected = true;
+  this.okToDraw = false;
   this.direction = null;
   this.clockwise = null;
   this.setInitialDirection();
 }
 
 Player.prototype.move = function (direction) {
+
+  this.okToDraw = true;
 
   if (direction == 'up') {
     if (this.direction == 's') {
@@ -71,25 +75,34 @@ Player.prototype.setInitialDirection = function () {
 Player.prototype.update = function(map) {
   var nextPos = this.getNextPos();
   var onTrack = this.onTrack(nextPos, map);
+  var alreadyDrawing = this.drawing;
 
-  //console.log('before ', nextPos, onTrack, this.drawing);
-  
-  // look for new track in direction we are traveling
+  if (alreadyDrawing && this.connected) {
+    this.drawing = false;
+    this.okTotDraw = false;
+  }
 
   if (!onTrack) {
-    if (this.isDrawing(nextPos, map)) {
+    if (this.okToDraw && this.isDrawing(nextPos, map)) {
       this.drawing = true;
+      this.connected = false;
     } else {
-      this.drawing = false;
       while (!onTrack) {
         this.turn();
         nextPos = this.getNextPos();
         onTrack = this.onTrack(nextPos, map);
       }
+      this.drawing = false;
+      this.connected = true;
+      this.okToDraw = false;
     }
   }
 
-  //console.log('after ', nextPos, onTrack, this.drawing);
+  // we are back on track from drawing
+  if (this.drawing && onTrack) {
+    this.connected = true;
+    this.okToDraw = false;
+  }
 
   this.y = nextPos[0];
   this.x = nextPos[1];
@@ -107,6 +120,9 @@ Player.prototype.isDrawing = function(nextPos, map) {
   }
 
   if (map[nextPos[0]]) {
+    if (map[nextPos[0]][nextPos[1]] == 1) {
+      return false;
+    }
     if (map[nextPos[0]][nextPos[1]] == 0) {
       return true;
     }
@@ -140,13 +156,11 @@ Player.prototype.onTrack = function (nextPos, map) {
     return false;
   }
 
-  if (map[nextPos[0]][nextPos[1]] == 1) { 
-    return true;
-  }
-
-  if (map[nextPos[0]][nextPos[1]] == 0) { 
+  if (map[nextPos[0]][nextPos[1]] != 1) { 
     return false;
   }
+
+  return true;
 }
 
 Player.prototype.getNextPos = function () {

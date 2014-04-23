@@ -2,14 +2,14 @@ window.onload = function() {
 
   var player = null;
   var moving = false;
+  var level = 1;
+  var score = 0;
 
   // Game update function
   function update(dt) {
-    //console.log('update', dt);
-
     if (moving) {
       player.move(moving);
-      moving = player.drawing;
+      moving = false;
     } 
     Map.update();
   }
@@ -25,7 +25,7 @@ window.onload = function() {
     }  
   }
 
-  // Start the game
+  // start the game loop
   function start() {
     Game.run({
       canvas: canvas, render: render, update: update, step: step,
@@ -50,7 +50,6 @@ window.onload = function() {
     Map.addEnemy();
     Map.addEnemy();
     player = Map.addPlayer();
-    //console.log(Map.map);
   }
 
   // 
