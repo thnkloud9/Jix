@@ -33,6 +33,7 @@ var Map = {
 
       this.cleanPlayerTracks(lastY, lastX, playerWasDrawing, player.drawing);
 
+       
       if (playerWasDrawing) {
         if (!player.drawing) {
           console.log('player scored');
@@ -59,6 +60,10 @@ var Map = {
     var endY = null;
     var startX = null;
     var endX = null;
+    var maxY = 0;
+    var maxX = 0;
+    var minY = this.cols;
+    var minX = this.rows;
 
     for (var y = 0 ; y < this.rows ; y++) {
       for (var x = 0 ; x < this.cols ; x++) {
@@ -79,6 +84,18 @@ var Map = {
             xCount++;
             lastX = x;
           }
+          if (y > maxY) {
+            maxY = y;
+          }
+          if (x > maxX) {
+            maxX = x;
+          }
+          if (y < minY) {
+            minY = y;
+          }
+          if (x < minX) {
+            minX = x;
+          }
           this.map[y][x] = 1;
         }
       }
@@ -87,7 +104,7 @@ var Map = {
     var endX = lastX;
 
     // fill inner area and calc score
-    console.log('before adjust',startY, startX, endY, endX, player.y, player.x);
+    //console.log('before adjust',startY, startX, endY, endX, player.y, player.x);
 
     // this works for bottom blocks
     if (player.y == (this.rows - 1)) {
@@ -118,14 +135,73 @@ var Map = {
       endX++;
     }
 
-    console.log('after adjust', startY, startX, endY, endX, player.y, player.x);
+    // find out how to determine area
+    var shape = null;
+    if ((player.blockStartPos[0] == player.blockEndPos[0]) || (player.blockStartPos[1] == player.blockEndPos[1])) {
+      if (minY == maxY) {
+        shape = "horizontal-line";
+      } else if (minX == maxX) {
+        shape = "vertical-line";
+      } else {
+        shape = "rectangle";
+      }
+    }
+
+    console.log('after adjust', startY, startX, endY, endX);
+    console.log(player.blockStartPos, player.blockEndPos, player.blockTurns.toString());
     for (var y = 0 ; y < this.rows ; y++) {
       for (var x = 0 ; x < this.cols ; x++) {
-        if (y >= startY && y <= endY) {
-          // fill
-          if (x >= startX && x <= endX) {
-            this.map[y][x] = this.fillColor;
-          } 
+
+        // fill rectangles
+        if (shape == "rectangle") {
+          if (y >= startY && y <= endY) {
+            if (x >= startX && x <= endX) {
+              this.map[y][x] = this.fillColor;
+            } 
+          }
+        }
+
+        // fill verticle lines
+        if (shape == "vertical-line") {
+          if (maxX > (this.cols / 2)) {
+            // fill to the right
+            if (y >= (minY - 1) && y <= (maxY + 1)) {
+              if (x >= (player.blockStartPos[1] + 1) && x <= (this.cols - 1)) {
+                this.map[y][x] = this.fillColor;
+              }
+            }
+          } else {
+            // fill to the left
+            if (y >= (minY - 1) && y <= (maxY + 1)) {
+              if (x >= 0 && x <= (player.blockStartPos[1] - 1)) {
+                this.map[y][x] = this.fillColor;
+              }
+            }
+          }
+        }
+
+        // fill horizontal lines
+        if (shape == "horizontal-line") {
+          if (maxY > (this.rows / 2)) {
+            // fill to the bottom
+            if (y >= (minY + 1) && y <= (this.rows - 1)) {
+              if (x >= (minX - 1) && x <= (maxX + 1)) {
+                this.map[y][x] = this.fillColor;
+              }
+            }
+          } else {
+            // fill to the top 
+            if (y >= 0 && y <= (minY - 1)) {
+              if (x >= (minX - 1) && x <= (maxX + 1)) {
+                this.map[y][x] = this.fillColor;
+              }
+            }
+          }
+        }
+
+        // unknown shapes
+        if (shape == null) {
+          
         }
       }
     }

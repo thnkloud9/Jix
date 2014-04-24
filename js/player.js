@@ -5,9 +5,14 @@ function Player(y,x, maxY, maxX) {
   this.maxX = maxX;
   this.directions = [ 'n', 'e', 's', 'w' ];
   this.speed = 1;
+
   this.drawing = false;
   this.connected = true;
   this.okToDraw = false;
+  this.blockStartPos = [];
+  this.blockEndPos = [];
+  this.blockTurns = [];
+
   this.direction = null;
   this.lastDirection = null;
   this.clockwise = null;
@@ -42,6 +47,10 @@ Player.prototype.move = function (direction) {
       this.clockwise = !this.clockwise;
     }
     this.direction = 'e';
+  }
+
+  if (this.drawing) {
+    this.blockTurns.push([this.y, this.x]);
   }
 }
 
@@ -88,6 +97,10 @@ Player.prototype.update = function(map) {
     if (this.okToDraw && this.isDrawing(nextPos, map)) {
       this.drawing = true;
       this.connected = false;
+      if (!alreadyDrawing) {
+        this.blockStartPos = [ this.y, this.x ];
+        this.blockTurns = [ ];
+      }
     } else {
       while (!onTrack) {
         this.turn();
@@ -95,9 +108,6 @@ Player.prototype.update = function(map) {
         onTrack = this.onTrack(nextPos, map);
       }
       this.lastDirection = this.direction;
-      this.drawing = false;
-      this.connected = true;
-      this.okToDraw = false;
     }
   }
 
@@ -105,6 +115,7 @@ Player.prototype.update = function(map) {
   if (this.drawing && onTrack) {
     this.connected = true;
     this.okToDraw = false;
+    this.blockEndPos = nextPos;
   }
 
   this.y = nextPos[0];
